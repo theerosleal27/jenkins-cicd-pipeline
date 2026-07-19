@@ -19,14 +19,16 @@ pipeline {
         stage('Set environment variables') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
+                    def branch = env.BRANCH_NAME ?: 'main'
+                    env.APP_BRANCH = branch
+                    if (branch == 'main') {
                         env.PORT = '3000'
-                    } else if (env.BRANCH_NAME == 'dev') {
+                    } else if (branch == 'dev') {
                         env.PORT = '3001'
                     } else {
                         env.PORT = '3000'
                     }
-                    echo "Branch: ${env.BRANCH_NAME} -> Port: ${env.PORT}"
+                    echo "Branch: ${env.APP_BRANCH} -> Port: ${env.PORT}"
                 }
             }
         }
@@ -46,16 +48,16 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:${env.BRANCH_NAME} ."
+                sh "docker build -t ${IMAGE_NAME}:${env.APP_BRANCH} ."
             }
         }
 
         stage('Deploy') {
             steps {
                 script {
-                    def containerName = "${IMAGE_NAME}-${env.BRANCH_NAME}"
+                    def containerName = "${IMAGE_NAME}-${env.APP_BRANCH}"
                     sh "docker rm -f ${containerName} || true"
-                    sh "docker run -d --name ${containerName} -p ${env.PORT}:3000 ${IMAGE_NAME}:${env.BRANCH_NAME}"
+                    sh "docker run -d --name ${containerName} -p ${env.PORT}:3000 ${IMAGE_NAME}:${env.APP_BRANCH}"
                 }
             }
         }
