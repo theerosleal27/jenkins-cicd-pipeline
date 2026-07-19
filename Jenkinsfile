@@ -27,6 +27,7 @@ pipeline {
                     } else {
                         env.PORT = '3000'
                     }
+                    echo "DEBUG - BRANCH_NAME is exactly: [${env.BRANCH_NAME}]"
                     echo "Branch: ${env.BRANCH_NAME} -> Port: ${env.PORT}"
                 }
             }
