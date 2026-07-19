@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node16'
+    }
+
     environment {
         IMAGE_NAME = "cicd-pipeline-app"
         PORT = "3000"
